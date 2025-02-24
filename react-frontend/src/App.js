@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { makeServer } from "./mockingserver/mirageserver";
+
+makeServer(); // Start MirageJS only in development mode
+
+const MOCK_BASE_URL = "/api";  // MirageJS mock API
+const EXPRESS_BASE_URL = process.env.EXPRESS_BASE_URL;
+
+const API_BASE_URL = "http://localhost:3000";
 
 function App() {
     const [users, setUsers] = useState([]);
@@ -12,8 +20,8 @@ function App() {
 
     const fetchUsers = async () => {
         try {
-            const response = await axios.get("http://localhost:3000/users");
-            setUsers(response.data);
+            const response = await axios.get(`${MOCK_BASE_URL}/users`); 
+            setUsers(response.data.users);
         } catch (error) {
             console.error("Error fetching users", error);
         }
@@ -22,7 +30,7 @@ function App() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post("http://localhost:3000/users", { name, email });
+            await axios.post(`${MOCK_BASE_URL}/users`, { name, email });
             fetchUsers(); // Refresh user list
             setName("");
             setEmail("");
@@ -42,8 +50,8 @@ function App() {
 
             <h2>Add User</h2>
             <form onSubmit={handleSubmit}>
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" required />
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
+                <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" required /><br></br>
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required /><br></br>
                 <button type="submit">Add User</button>
             </form>
         </div>
